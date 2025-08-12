@@ -39,13 +39,20 @@ let counter = 0;
 async function runScraperFidalga() {
 const URL = "https://www.fidalga.com/collections/all/products.json?page=" // Page size is 30.
 let endOfInventory = false;
-let counter = 0;
-const resp = await axios.get(URL+counter);
-let products = resp.data?.products;
+let counter = 1; // La pagina 0 es igual a la pagina 1, asi que comenzamos en 1.
 while (!endOfInventory) {
-    if (!products || products.length === 0)
+    const resp = await axios.get(URL+counter);
+    let products = resp.data?.products;
+    if (!products || products.length === 0) {
         //This means we reached the end of a category
         endOfInventory = true;
         break;
+    }
+    for (const product of products) {
+        console.log(product?.title)
+        await sleep(20)
+    }
+    await sleep(2000)
+    counter+=1
 }
 }
