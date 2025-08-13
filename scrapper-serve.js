@@ -27,76 +27,77 @@ switch (selection) {
         console.log("Error. Value of selection: "+selection)
 }
 async function runScraperHipermaxi() {
-const URL = "https://hipermaxi.com/tienda-api/api/v1/public/productos?IdMarket=67&IdLocatario=67&Cantidad=500&Pagina=" //Most complex one.
-let endOfInventory = false;
-let counter = 1;
-while (!endOfInventory) {
-    const resp = await axios.get(URL+counter);
-    let products = resp.data?.Dato;
-    if (!products || products.length === 0) {
-        //This means we reached the end of a category
-        endOfInventory = true;
-        break;
+    const URL = "https://hipermaxi.com/tienda-api/api/v1/public/productos?IdMarket=67&IdLocatario=67&Cantidad=500&Pagina=" //Most complex one.
+    let endOfInventory = false;
+    let counter = 1;
+    while (!endOfInventory) {
+        const resp = await axios.get(URL+counter);
+        let products = resp.data?.Dato;
+        if (!products || products.length === 0) {
+            //This means we reached the end of a category
+            endOfInventory = true;
+            break;
+        }
+        for (const product of products) {
+            // Hay que extraer: nombre, vendor, tipo de producto, precio, link a imagen.
+            productName = product?.Descripcion
+            price = product?.PrecioVenta
+            type = product?.product_type // Is ALWAYS empty on Amarket
+            vendor = product?.vendor
+            imageLink = product?.images[0]?.src
+            await sleep(20)
+        }
+        await sleep(2000)
+        counter+=1
     }
-    for (const product of products) {
-        // Hay que extraer: nombre, vendor, tipo de producto, precio, link a imagen.
-        productName = product?.Descripcion
-        price = product?.PrecioVenta
-        type = product?.product_type // Is ALWAYS empty on Amarket
-        vendor = product?.vendor
-        imageLink = product?.images[0]?.src
-        await sleep(20)
-    }
-    await sleep(2000)
-    counter+=1
 }
 async function runScraperAmarket() {
-const URL = "https://amarket.com.bo/collections/all/products.json?page=" // Page size is 30.
-let endOfInventory = false;
-let counter = 1; // La pagina 0 es igual a la pagina 1, asi que comenzamos en 1.
-while (!endOfInventory) {
-    const resp = await axios.get(URL+counter);
-    let products = resp.data?.products;
-    if (!products || products.length === 0) {
-        //This means we reached the end of a category
-        endOfInventory = true;
-        break;
+    const URL = "https://amarket.com.bo/collections/all/products.json?page=" // Page size is 30.
+    let endOfInventory = false;
+    let counter = 1; // La pagina 0 es igual a la pagina 1, asi que comenzamos en 1.
+    while (!endOfInventory) {
+        const resp = await axios.get(URL+counter);
+        let products = resp.data?.products;
+        if (!products || products.length === 0) {
+            //This means we reached the end of a category
+            endOfInventory = true;
+            break;
+        }
+        for (const product of products) {
+            // Hay que extraer: nombre, vendor, tipo de producto, precio, link a imagen.
+            productName = product?.title
+            price = product?.variants[0]?.price
+            type = product?.product_type // Is ALWAYS empty on Amarket
+            vendor = product?.vendor
+            imageLink = product?.images[0]?.src
+            await sleep(20)
+        }
+        await sleep(2000)
+        counter+=1
     }
-    for (const product of products) {
-        // Hay que extraer: nombre, vendor, tipo de producto, precio, link a imagen.
-        productName = product?.title
-        price = product?.variants[0]?.price
-        type = product?.product_type // Is ALWAYS empty on Amarket
-        vendor = product?.vendor
-        imageLink = product?.images[0]?.src
-        await sleep(20)
-    }
-    await sleep(2000)
-    counter+=1
-}
 }
 async function runScraperFidalga() {
-const URL = "https://www.fidalga.com/collections/all/products.json?page=" // Page size is 30.
-let endOfInventory = false;
-let counter = 1; // La pagina 0 es igual a la pagina 1, asi que comenzamos en 1.
-while (!endOfInventory) {
-    const resp = await axios.get(URL+counter);
-    let products = resp.data?.products;
-    if (!products || products.length === 0) {
-        //This means we reached the end of a category
-        endOfInventory = true;
-        break;
+    const URL = "https://www.fidalga.com/collections/all/products.json?page=" // Page size is 30.
+    let endOfInventory = false;
+    let counter = 1; // La pagina 0 es igual a la pagina 1, asi que comenzamos en 1.
+    while (!endOfInventory) {
+        const resp = await axios.get(URL+counter);
+        let products = resp.data?.products;
+        if (!products || products.length === 0) {
+            //This means we reached the end of a category
+            endOfInventory = true;
+            break;
+        }
+        for (const product of products) {
+            // Hay que extraer: nombre, vendor, tipo de producto, precio, link a imagen.
+            productName = product?.title
+            price = product?.variants[0]?.price
+            type = product?.product_type
+            vendor = product?.vendor
+            imageLink = product?.images[0]?.src
+            await sleep(20)
+        }
+        await sleep(2000)
+        counter+=1
     }
-    for (const product of products) {
-        // Hay que extraer: nombre, vendor, tipo de producto, precio, link a imagen.
-        productName = product?.title
-        price = product?.variants[0]?.price
-        type = product?.product_type
-        vendor = product?.vendor
-        imageLink = product?.images[0]?.src
-        await sleep(20)
-    }
-    await sleep(2000)
-    counter+=1
-}
 }
