@@ -26,6 +26,13 @@ switch (selection) {
     default:
         console.log("Error. Value of selection: "+selection)
 }
+async function insertToDatabase(arrayToInsert) {
+    connection = await mysql.createConnection(dbConfig);
+    const sql = "INSERT INTO extraction (chain, vendor, date, name, sku, fullPrice, salePrice, discount) VALUES ?";
+    const values = arrayToInsert.map(p => [p.productName, p.price, p.vendor, p.productType,p.imageLink,p.supermarket]);
+    const [result] = await connection.query(sql, [values]);
+    console.log(`Success! Affected ${result.affectedRows}rows`)
+}
 async function runScraperHipermaxi() {
     const URL = "https://hipermaxi.com/tienda-api/api/v1/public/productos?IdMarket=67&IdLocatario=67&Cantidad=500&Pagina=" //Most complex one.
     let endOfInventory = false;
@@ -42,10 +49,14 @@ async function runScraperHipermaxi() {
             // Hay que extraer: nombre, vendor, tipo de producto, precio, link a imagen.
             productName = product?.Descripcion
             price = product?.PrecioVenta
-            type = product?.product_type // Is ALWAYS empty on Amarket
+            productType = product?.product_type // Is ALWAYS empty on Amarket
             vendor = product?.vendor
             imageLink = product?.images[0]?.src
-            await sleep(20)
+            sku = product?.
+            supermarket = "Hipermaxi"
+            // await sleep(20)
+            productArray = [productName,price,productType,vendor,imageLink,supermarket]
+            // NEEDS duplicate protection.
         }
         await sleep(2000)
         counter+=1
