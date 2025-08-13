@@ -3,11 +3,12 @@ const axios = require('axios');
 const mysql = require('mysql2/promise');
 
 //Declaramos la funcion sleep que vamos a usar a lo largo del programa, y configuramos nuestra base de datos
-const dbConfig = {host: 'localhost', user: 'root', password: 'root', database: 'bd_extraction'};
+const dbConfig = {host: 'localhost', user: 'root', password: 'root', database: 'scraper_supermercados'};
+
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 //Un switch para una variable que todavia no existe.
-let selection = 'all'
+let selection = 'hipermaxi'
 switch (selection) {
     case 'hipermaxi':
         runScraperHipermaxi();
@@ -34,6 +35,7 @@ async function insertToDatabase(arrayToInsert) {
     console.log(`Success! Affected ${result.affectedRows}rows`)
 }
 async function runScraperHipermaxi() {
+    connection = await mysql.createConnection(dbConfig);
     const URL = "https://hipermaxi.com/tienda-api/api/v1/public/productos?IdMarket=67&IdLocatario=67&Cantidad=500&Pagina=" //Most complex one.
     let endOfInventory = false;
     let counter = 1;
@@ -52,7 +54,7 @@ async function runScraperHipermaxi() {
             productType = product?.product_type // Is ALWAYS empty on Amarket
             vendor = product?.vendor
             imageLink = product?.images[0]?.src
-            sku = product?.
+            // sku = product?.
             supermarket = "Hipermaxi"
             // await sleep(20)
             productArray = [productName,price,productType,vendor,imageLink,supermarket]
@@ -78,10 +80,11 @@ async function runScraperAmarket() {
             // Hay que extraer: nombre, vendor, tipo de producto, precio, link a imagen.
             productName = product?.title
             price = product?.variants[0]?.price
-            type = product?.product_type // Is ALWAYS empty on Amarket
+            productType = product?.product_type // Is ALWAYS empty on Amarket
             vendor = product?.vendor
             imageLink = product?.images[0]?.src
-            await sleep(20)
+            supermarket = "Amarket"
+            productArray = [productName,price,productType,vendor,imageLink,supermarket]
         }
         await sleep(2000)
         counter+=1
@@ -103,10 +106,11 @@ async function runScraperFidalga() {
             // Hay que extraer: nombre, vendor, tipo de producto, precio, link a imagen.
             productName = product?.title
             price = product?.variants[0]?.price
-            type = product?.product_type
+            productType = product?.product_type
             vendor = product?.vendor
             imageLink = product?.images[0]?.src
-            await sleep(20)
+            supermarket = "Fidalga"
+            productArray = [productName,price,productType,vendor,imageLink,supermarket]
         }
         await sleep(2000)
         counter+=1
