@@ -6,7 +6,7 @@ const mysql = require('mysql2/promise');
 const dbConfig = {host: 'localhost', user: 'root', password: 'root', database: 'scraper_supermercados'};
 var now = new Date()
 now = now.toISOString().replace("T"," ").replace("Z","")
-console.log(now)
+console.log(`Starting the operation at ${now}`)
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 //Un switch para una variable que todavia no existe.
@@ -32,7 +32,7 @@ switch (selection) {
 async function insertToDatabase(arrayToInsert) {
     connection = await mysql.createConnection(dbConfig);
     const sql = "INSERT INTO extraccion (name, price, compareAtPrice, vendor, productType, imageLink, sku, supermarket, datetime) VALUES ?";
-    console.log(arrayToInsert)
+    // console.log(arrayToInsert)
     const [result] = await connection.query(sql, [arrayToInsert]);
     console.log(`Success! Affected ${result.affectedRows}rows`)
 }
@@ -65,7 +65,7 @@ async function runScraperHipermaxi() {
             supermarket = "Hipermaxi"
             productArray = [productName,price,compareAtPrice,vendor,productType,imageLink,sku,supermarket,now]
             allProducts.push(productArray)
-            console.log(productArray)
+            // console.log(productArray)
             // NEEDS duplicate protection. For later.
             
         }
