@@ -70,7 +70,7 @@ async function runScraperHipermaxi() {
             
         }
         console.log(`Products added in Hipermaxi:${products.length} total: ${allProducts.length}`)
-        await sleep(2000)
+        await sleep(5000)
         counter+=1
     }
     insertToDatabase(allProducts)
@@ -80,7 +80,7 @@ async function runScraperAmarket() {
     let endOfInventory = false;
     let counter = 1; // La pagina 0 es igual a la pagina 1, asi que comenzamos en 1.
     let allProducts = [];
-    while (counter!=2) {
+    while (!endOfInventory) {
         const resp = await axios.get(URL+counter);
         let products = resp.data?.products;
         if (!products || products.length === 0) {
@@ -105,7 +105,7 @@ async function runScraperAmarket() {
             allProducts.push(productArray)
         }
         console.log(`Products added in Amarket:${products.length} total: ${allProducts.length}`)
-        await sleep(2000)
+        await sleep(5000)
         counter+=1
     }
     insertToDatabase(allProducts)
@@ -140,7 +140,7 @@ async function runScraperFidalga() {
             allProducts.push(productArray)
         }
         console.log(`Products added in Fidalga:${products.length} total: ${allProducts.length}`)
-        await sleep(2000)
+        await sleep(5000)
         counter+=1
     }
     insertToDatabase(allProducts)
