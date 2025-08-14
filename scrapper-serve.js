@@ -22,7 +22,7 @@ switch (selection) {
         runScraperFidalga();
         break;
     case 'all':
-        runScraperHipermaxi();
+        // runScraperHipermaxi();
         runScraperAmarket();
         runScraperFidalga();
         break;
@@ -43,35 +43,41 @@ async function runScraperHipermaxi() {
     let counter = 1;
     let allProducts = [];
     while (!endOfInventory) {
-        const resp = await axios.get(URL+counter);
-        let products = resp.data?.Dato;
-        if (!products || products.length === 0) {
-            //This means we reached the end of a category
-            endOfInventory = true;
-            break;
-        }
-        for (const product of products) {
-            // Hay que extraer: nombre, vendor, tipo de producto, precio, link a imagen.
-            productName = product?.Descripcion
-            price = product?.PrecioVenta
-            compareAtPrice = product?.PrecioOriginal
-            if (compareAtPrice==0.0000 || !compareAtPrice) {
-                compareAtPrice = price
+        try {
+            const resp = await axios.get(URL+counter);
+            let products = resp.data?.Dato;
+            if (!products || products.length === 0) {
+                //This means we reached the end of a category
+                endOfInventory = true;
+                break;
             }
-            productType = "N/A" // Is ALWAYS empty on Amarket
-            vendor = "N/A"
-            imageLink = product?.UrlFoto
-            sku = product?.IdProducto
-            supermarket = "Hipermaxi"
-            productArray = [productName,price,compareAtPrice,vendor,productType,imageLink,sku,supermarket,now]
-            allProducts.push(productArray)
-            // console.log(productArray)
-            // NEEDS duplicate protection. For later.
-            
+            for (const product of products) {
+                // Hay que extraer: nombre, vendor, tipo de producto, precio, link a imagen.
+                productName = product?.Descripcion
+                price = product?.PrecioVenta
+                compareAtPrice = product?.PrecioOriginal
+                if (compareAtPrice==0.0000 || !compareAtPrice) {
+                    compareAtPrice = price
+                }
+                productType = "N/A" // Is ALWAYS empty on Amarket
+                vendor = "N/A"
+                imageLink = product?.UrlFoto
+                sku = product?.IdProducto
+                supermarket = "Hipermaxi"
+                productArray = [productName,price,compareAtPrice,vendor,productType,imageLink,sku,supermarket,now]
+                allProducts.push(productArray)
+                // console.log(productArray)
+                // NEEDS duplicate protection. For later.
+                
+            }
+            console.log(`Products added in Hipermaxi:${products.length} total: ${allProducts.length}`)
+            await sleep(5000 + Math.random()*500)
+            counter+=1
+            }
+        catch (error) {
+            console.error(`An error occurred: ${error}. Giving it 3 seconds before reattempting.`);
+            await sleep(3000)
         }
-        console.log(`Products added in Hipermaxi:${products.length} total: ${allProducts.length}`)
-        await sleep(5000)
-        counter+=1
     }
     insertToDatabase(allProducts)
 }
@@ -81,32 +87,38 @@ async function runScraperAmarket() {
     let counter = 1; // La pagina 0 es igual a la pagina 1, asi que comenzamos en 1.
     let allProducts = [];
     while (!endOfInventory) {
-        const resp = await axios.get(URL+counter);
-        let products = resp.data?.products;
-        if (!products || products.length === 0) {
-            //This means we reached the end of a category
-            endOfInventory = true;
-            break;
-        }
-        for (const product of products) {
-            // Hay que extraer: nombre, vendor, tipo de producto, precio, link a imagen.
-            productName = product?.title
-            price = product?.variants[0]?.price
-            compareAtPrice = product?.variants[0]?.compare_at_price
-            if (!compareAtPrice || compareAtPrice == 0.00) {
-                compareAtPrice = price
+        try {
+            const resp = await axios.get(URL+counter);
+            let products = resp.data?.products;
+            if (!products || products.length === 0) {
+                //This means we reached the end of a category
+                endOfInventory = true;
+                break;
             }
-            vendor = product?.vendor
-            productType = product?.product_type // Is ALWAYS empty on Amarket
-            imageLink = product?.images[0]?.src
-            sku = product?.variants[0]?.sku
-            supermarket = "Amarket"
-            productArray = [productName,price,compareAtPrice,vendor,productType,imageLink,sku,supermarket,now]
-            allProducts.push(productArray)
+            for (const product of products) {
+                // Hay que extraer: nombre, vendor, tipo de producto, precio, link a imagen.
+                productName = product?.title
+                price = product?.variants[0]?.price
+                compareAtPrice = product?.variants[0]?.compare_at_price
+                if (!compareAtPrice || compareAtPrice == 0.00) {
+                    compareAtPrice = price
+                }
+                vendor = product?.vendor
+                productType = product?.product_type // Is ALWAYS empty on Amarket
+                imageLink = product?.images[0]?.src
+                sku = product?.variants[0]?.sku
+                supermarket = "Amarket"
+                productArray = [productName,price,compareAtPrice,vendor,productType,imageLink,sku,supermarket,now]
+                allProducts.push(productArray)
+            }
+            console.log(`Products added in Amarket:${products.length} total: ${allProducts.length}`)
+            await sleep(3000 + Math.random()*500)
+            counter+=1
         }
-        console.log(`Products added in Amarket:${products.length} total: ${allProducts.length}`)
-        await sleep(5000)
-        counter+=1
+        catch (error) {
+            console.error(`An error occurred: ${error}. Giving it 3 seconds before reattempting.`);
+            await sleep(3000)
+        }
     }
     insertToDatabase(allProducts)
 }
@@ -116,32 +128,38 @@ async function runScraperFidalga() {
     let counter = 1; // La pagina 0 es igual a la pagina 1, asi que comenzamos en 1.
     let allProducts = []
     while (!endOfInventory) {
-        const resp = await axios.get(URL+counter);
-        let products = resp.data?.products;
-        if (!products || products.length === 0) {
-            //This means we reached the end of a category
-            endOfInventory = true;
-            break;
-        }
-        for (const product of products) {
-            // Hay que extraer: nombre, vendor, tipo de producto, precio, link a imagen.
-            productName = product?.title
-            price = product?.variants[0]?.price
-            compareAtPrice = product?.variants[0]?.compare_at_price
-            if (!compareAtPrice || compareAtPrice == 0.00) {
-                compareAtPrice = price
+        try {
+            const resp = await axios.get(URL+counter);
+            let products = resp.data?.products;
+            if (!products || products.length === 0) {
+                //This means we reached the end of a category
+                endOfInventory = true;
+                break;
             }
-            vendor = product?.vendor
-            productType = product?.product_type // Is ALWAYS empty on Amarket
-            imageLink = product?.images[0]?.src
-            sku = product?.variants[0]?.sku
-            supermarket = "Amarket"
-            productArray = [productName,price,compareAtPrice,vendor,productType,imageLink,sku,supermarket,now]
-            allProducts.push(productArray)
+            for (const product of products) {
+                // Hay que extraer: nombre, vendor, tipo de producto, precio, link a imagen.
+                productName = product?.title
+                price = product?.variants[0]?.price
+                compareAtPrice = product?.variants[0]?.compare_at_price
+                if (!compareAtPrice || compareAtPrice == 0.00) {
+                    compareAtPrice = price
+                }
+                vendor = product?.vendor
+                productType = product?.product_type // Is ALWAYS empty on Amarket
+                imageLink = product?.images[0]?.src
+                sku = product?.variants[0]?.sku
+                supermarket = "Fidalga"
+                productArray = [productName,price,compareAtPrice,vendor,productType,imageLink,sku,supermarket,now]
+                allProducts.push(productArray)
+            }
+            console.log(`Products added in Fidalga:${products.length} total: ${allProducts.length}`)
+            await sleep(1000 + Math.random()*500)
+            counter+=1
         }
-        console.log(`Products added in Fidalga:${products.length} total: ${allProducts.length}`)
-        await sleep(5000)
-        counter+=1
+        catch (error) {
+            console.error(`An error occurred: ${error}. Giving it 3 seconds before reattempting.`);
+            await sleep(3000)
+        }
     }
     insertToDatabase(allProducts)
 }
