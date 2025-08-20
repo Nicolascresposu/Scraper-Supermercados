@@ -1,0 +1,11 @@
+{
+  "name": "axios",
+  "version": "1.0.0",
+  "description": "// Ejemplo de funcionamiento basico:\r const resp = await axios.post(\"https://www.fidalga.com/collections/all/products.json\") // Esto usa axios para obtener la respuesta de una url\r const products = resp.data?.productos; // Si el json tiene adentro siempre un \"data\", y puede o no tener uno llamado \"productos\", porque por ejemplo, en una pagina de error no tiene productos. Pero siempre tiene \"datos\" (No necesariamente aplica a este caso)",
+  "main": "readme.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
