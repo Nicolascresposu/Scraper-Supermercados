@@ -91,7 +91,7 @@ async function saveProduct(product, supermarket) {
     // usamos una consulta SQL con ON CONFLICT para evitar duplicados
   const sql = `
     INSERT INTO productos (product_id, nombre, precio, supermercado, image_link)
-    VALUES ($1, $2, $3, $4, $5)
+    VALUES ($1, $2, $3, $4)
     ON CONFLICT (product_id) DO UPDATE
     SET nombre = EXCLUDED.nombre,
         precio = EXCLUDED.precio,
