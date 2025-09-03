@@ -46,7 +46,7 @@ while (!endOfInventory) {
 
         for (const product of products) {
             //console.log(product?.id);
-            console.log(product?.Descripcion);
+            console.log(product?.title);
             //console.log(product?.variants[0]?.price);
             await saveProduct(product, 'Hipermaxi');
             await sleep(20);

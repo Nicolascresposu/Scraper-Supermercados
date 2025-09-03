@@ -48,6 +48,7 @@ while (!endOfInventory) {
             //console.log(product?.id);
             console.log(product?.Descripcion);
             //console.log(product?.variants[0]?.price);
+            console.log(JSON.stringify(product, null, 2));
             await saveProduct(product, 'Hipermaxi');
             await sleep(20);
         }

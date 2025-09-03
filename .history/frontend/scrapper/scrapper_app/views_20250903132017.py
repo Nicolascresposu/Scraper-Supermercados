@@ -13,7 +13,3 @@ def amarket_view(request):
 def fidalga_view(request):
     productos = Producto.objects.filter(supermercado='Fidalga')[:50] # trae los primeros 50 productos de Amarket
     return render(request, 'fidalga.html', {'productos': productos}) # aquí es donde pasas los productos al template
-
-def hipermaxi_view(request):
-    productos = Producto.objects.filter(supermercado='Hipermaxi')[:50] # trae los primeros 50 productos de Amarket
-    return render(request, 'hipermaxi.html', {'productos': productos}) # aquí es donde pasas los productos al template

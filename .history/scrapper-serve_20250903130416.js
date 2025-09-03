@@ -10,7 +10,7 @@ const pool = new Pool(dbConfig);
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 //Un switch para una variable que todavia no existe.
-let selection = 'hipermaxi'
+let selection = 'all'
 switch (selection) {
     case 'hipermaxi':
         runScraperHipermaxi();
@@ -30,14 +30,12 @@ switch (selection) {
         console.log("Error. Value of selection: "+selection)
 }
 async function runScraperHipermaxi() {
-const URL = "https://hipermaxi.com/tienda-api/api/v1/public/productos?IdMarket=67&IdLocatario=67&Cantidad=500&Pagina=" //Most complex one.
+const URL = "https://hipermaxi.com/tienda-api/api/v1/public/productos?IdMarket=" //Most complex one.
 let endOfInventory = false;
 let counter = 1;
-console.log("Starting scraper for Hipermaxi...");
 while (!endOfInventory) {
         const resp = await axios.get(URL + counter);
-        let products = resp.data?.Dato;
-        console.log(products.length)
+        let products = resp.data?.products;
 
         if (!products || products.length === 0) {
             endOfInventory = true;
@@ -46,7 +44,7 @@ while (!endOfInventory) {
 
         for (const product of products) {
             //console.log(product?.id);
-            console.log(product?.Descripcion);
+            console.log(product?.title);
             //console.log(product?.variants[0]?.price);
             await saveProduct(product, 'Hipermaxi');
             await sleep(20);
@@ -118,28 +116,14 @@ async function saveProduct(product, supermarket) {
         supermercado = EXCLUDED.supermercado,
         image_link = EXCLUDED.image_link;
   `;
-
-  let values = [];
-
   // excluded se utiliza para referirse a los valores que se intentaron insertar
-  if(supermarket == "Hipermaxi") { 
-    values = [
-      product.IdProducto || null,
-      product.Descripcion || "Sin nombre",
-      product.PrecioVenta || 0,
-      supermarket,
-      product.UrlFoto || null
-    ];
-  } else {
-    values = [
-        product.id,
-        product.title,
-        product.variants?.[0]?.price || 0,
-        supermarket,
-        product.images?.[0]?.src || null
-    ];
-  }
-  
+  const values = [
+    product.id,
+    product.title,
+    product.variants?.[0]?.price || 0,
+    supermarket,
+    product.images?.[0]?.src || null
+  ];
 
   try {
     await pool.query(sql, values);

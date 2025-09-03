@@ -46,7 +46,7 @@ while (!endOfInventory) {
 
         for (const product of products) {
             //console.log(product?.id);
-            console.log(product?.Descripcion);
+            console.log(product?.title);
             //console.log(product?.variants[0]?.price);
             await saveProduct(product, 'Hipermaxi');
             await sleep(20);
@@ -131,7 +131,7 @@ async function saveProduct(product, supermarket) {
       product.UrlFoto || null
     ];
   } else {
-    values = [
+    const values = [
         product.id,
         product.title,
         product.variants?.[0]?.price || 0,

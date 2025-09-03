@@ -46,7 +46,7 @@ while (!endOfInventory) {
 
         for (const product of products) {
             //console.log(product?.id);
-            console.log(product?.Descripcion);
+            console.log(product?.title);
             //console.log(product?.variants[0]?.price);
             await saveProduct(product, 'Hipermaxi');
             await sleep(20);
@@ -118,20 +118,17 @@ async function saveProduct(product, supermarket) {
         supermercado = EXCLUDED.supermercado,
         image_link = EXCLUDED.image_link;
   `;
-
-  let values = [];
-
   // excluded se utiliza para referirse a los valores que se intentaron insertar
-  if(supermarket == "Hipermaxi") { 
-    values = [
-      product.IdProducto || null,
-      product.Descripcion || "Sin nombre",
-      product.PrecioVenta || 0,
-      supermarket,
-      product.UrlFoto || null
+  if(supermarket === "Hipermaxi") { 
+    const values = [
+        product?.IdProducto,
+        product?.Descripcion,
+        product?.PrecioVenta,
+        supermarket,
+        product?.UrlFoto
     ];
   } else {
-    values = [
+    const values = [
         product.id,
         product.title,
         product.variants?.[0]?.price || 0,
