@@ -1,6 +1,8 @@
 // Importamos librerias, estas 2 son las minimas
 const axios = require('axios');
-const mysql = require('mysql2/promise');
+//const mysql = require('mysql2/promise');
+const { Pool } = require('pg');
+// pool es para conexiones a postgres
 
 //Declaramos la funcion sleep que vamos a usar a lo largo del programa, y configuramos nuestra base de datos
 const dbConfig = {host: 'localhost', user: 'root', password: 'root', database: 'scraper_supermercados'};
@@ -10,7 +12,7 @@ console.log(`Starting the operation at ${now}`)
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 //Un switch para una variable que todavia no existe.
-let selection = 'all'
+let selection = 'hipermaxi'
 switch (selection) {
     case 'hipermaxi':
         runScraperHipermaxi();
