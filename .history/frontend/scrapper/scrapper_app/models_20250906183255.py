@@ -6,6 +6,7 @@ class Producto(models.Model):
     precio = models.FloatField()
     supermercado = models.CharField(max_length=50)
     image_link = models.TextField(null=True) 
+    # los campos de aquí deben coincidir con los de la base de datos
     
     class Meta:
         db_table = 'productos'
@@ -13,12 +14,10 @@ class Producto(models.Model):
     def __str__(self):
         return self.nombre
     
-    @property
     def color_css(self):
         colores = {
-            "Fidalga": "text-fidalga",
+            "Fidalga": "text-fildaga",
             "Hipermaxi": "text-hipermaxi",
             "Amarket": "text-amarket",
         }
-        key = (self.supermercado or "").strip().lower()
         return colores.get(self.supermercado, "text-secondary")

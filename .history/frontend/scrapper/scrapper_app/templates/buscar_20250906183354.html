@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Buscar{% endblock %}
+
+{% block content %}
+  <h2 class="mt-4">Resultados{% if q %} para “{{ q }}”{% endif %}</h2>
+
+<div class="row">
+    {% for producto in productos %}
+    <div class="col-4 my-2">
+        <div class="card">
+            <div class="card-header">
+                <p class="{{ producto.color_css }}">{{ producto.supermercado }}</p>
+            </div>
+            
+            <div class="card-body">
+                <img src="{{producto.image_link}}" class="img-fluid rounded" alt="  ">
+                <h5 class="card-title">{{producto.nombre}}</h5>
+                <p><span class="badge bg-secondary">{{producto.precio}} Bs.</span></p>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    {% if q %}
+    <p>No se encontraron productos para “{{ q }}”.</p>
+    {% else %}
+    <p>Escribe algo para buscar.</p>
+    {% endif %}
+    {% endfor %}
+</div>
+
+  {% if productos and productos.paginator.num_pages > 1 %}
+  <nav class="mt-3">
+    <ul class="pagination">
+      {% if productos.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?q={{ q }}&page={{ productos.previous_page_number }}">Anterior</a>
+        </li>
+      {% endif %}
+      <li class="page-item disabled">
+        <span class="page-link">Página {{ productos.number }} de {{ productos.paginator.num_pages }}</span>
+      </li>
+      {% if productos.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?q={{ q }}&page={{ productos.next_page_number }}">Siguiente</a>
+        </li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
+{% endblock %}

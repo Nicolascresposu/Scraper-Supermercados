@@ -16,7 +16,7 @@ class Producto(models.Model):
     @property
     def color_css(self):
         colores = {
-            "Fidalga": "text-fidalga",
+            "Fidalga": "text-fildaga",
             "Hipermaxi": "text-hipermaxi",
             "Amarket": "text-amarket",
         }

@@ -13,12 +13,10 @@ class Producto(models.Model):
     def __str__(self):
         return self.nombre
     
-    @property
     def color_css(self):
         colores = {
-            "Fidalga": "text-fidalga",
+            "Fidalga": "text-fildaga",
             "Hipermaxi": "text-hipermaxi",
             "Amarket": "text-amarket",
         }
-        key = (self.supermercado or "").strip().lower()
         return colores.get(self.supermercado, "text-secondary")

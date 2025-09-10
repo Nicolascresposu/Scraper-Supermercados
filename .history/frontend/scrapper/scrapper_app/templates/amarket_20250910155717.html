@@ -1,18 +1,16 @@
 {% extends "base.html" %}
 
-{% block title %}Hipermaxi{% endblock %}
+{% block title %}Amarket{% endblock %}
 
 {% block content %}
-<h2 class="mt-4">Productos de Hipermaxi</h2>
+<h2 class="mt-4">Productos de Amarket</h2>
 <div class="row">
   {% for producto in productos %}
-    <div class="col-4 my-2">
-      <div class="card h-100">
-        <div class="card-body">
-          <div class="image-container">
-            <img src="{{producto.image_link}}" class="img-fluid rounded" alt="  ">
-          </div>
-          <h5 class="card-title mt-2">{{producto.nombre}}</h5>
+    <div class="col-md-4 my-2">
+      <div class="card d-flex flex-column h-100">
+        <div class="card-body d-flex flex-column">
+          <img src="{{producto.image_link}}" class="img-fluid rounded" alt="  ">
+          <h5 class="card-title">{{producto.nombre}}</h5>
           <p><span class="badge bg-secondary">{{producto.precio}} Bs.</span></p>
         </div>
       </div>    
