@@ -16,9 +16,9 @@ class Producto(models.Model):
     @property
     def color_css(self):
         colores = {
-            "Fidalga": "text-fidalga",
-            "Hipermaxi": "text-hipermaxi",
-            "Amarket": "text-amarket",
+            "fidalga": "text-fidalga",
+            "hipermaxi": "text-hipermaxi",
+            "amarket": "text-amarket",
         }
         key = (self.supermercado or "").strip().lower()
         return colores.get(key, "text-default")
