@@ -21,4 +21,4 @@ class Producto(models.Model):
             "Amarket": "text-amarket",
         }
         key = (self.supermercado or "").strip().lower()
-        return colores.get(self.supermercado, "text-secondary")
+        return colores.get(self.supermercado, "text-default")
