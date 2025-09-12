@@ -32,7 +32,8 @@ ALLOWED_HOSTS = [
     'comparativaprecios.ddns.net',
     '181.115.186.58',
     'localhost',
-    '127.0.0.1'
+    '127.0.0.1',
+    'scraper-supermercados.onrender.com'
 ]
 
 
