@@ -2,6 +2,8 @@
 const axios = require('axios');
 //const mysql = require('mysql2/promise');
 const { Pool } = require('pg');
+
+const cron = require('node-cron');
 // pool es para conexiones a postgres
 
 //Declaramos la funcion sleep que vamos a usar a lo largo del programa, y configuramos nuestra base de datos
@@ -10,25 +12,28 @@ const pool = new Pool(dbConfig);
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 //Un switch para una variable que todavia no existe.
-let selection = 'hipermaxi'
-switch (selection) {
-    case 'hipermaxi':
-        runScraperHipermaxi();
-        break;
-    case 'amarket':
-        runScraperAmarket();
-        break;
-    case 'fidalga':
-        runScraperFidalga();
-        break;
-    case 'all':
-        runScraperHipermaxi();
-        runScraperAmarket();
-        runScraperFidalga();
-        break;
-    default:
-        console.log("Error. Value of selection: "+selection)
+async function mainFunction() {
+    let selection = 'hipermaxi'
+    switch (selection) {
+        case 'hipermaxi':
+            runScraperHipermaxi();
+            break;
+        case 'amarket':
+            runScraperAmarket();
+            break;
+        case 'fidalga':
+            runScraperFidalga();
+            break;
+        case 'all':
+            runScraperHipermaxi();
+            runScraperAmarket();
+            runScraperFidalga();
+            break;
+        default:
+            console.log("Error. Value of selection: "+selection)
+    }
 }
+
 async function runScraperHipermaxi() {
 const URL = "https://hipermaxi.com/tienda-api/api/v1/public/productos?IdMarket=67&IdLocatario=67&Cantidad=500&Pagina=" //Most complex one.
 let endOfInventory = false;
@@ -147,3 +152,16 @@ async function saveProduct(product, supermarket) {
     console.error("Error saving product:", err);
   }
 }
+
+
+(async () => {
+cron.schedule('0 2 * * *', () => {
+    console.log("Running!")
+  mainFunction();
+}, {
+  scheduled: true,
+  timezone: "America/New_York" // Example timezone, change to your own!
+});
+mainFunction();
+console.log('Scheduler started. Waiting for the scheduled time...');
+})();
