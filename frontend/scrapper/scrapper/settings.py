@@ -75,12 +75,12 @@ WSGI_APPLICATION = 'scrapper.wsgi.application'
 
 DATABASES = {
     'default': { # datos de la base de datos PostgreSQL
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'bd_extraction',
-        'USER': 'postgres',     
-        'PASSWORD': '1234567890', 
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'scraper_supermercados',
+        'USER': 'root',     
+        'PASSWORD': 'root', 
         'HOST': 'localhost',
-        'PORT': '5432', 
+        'PORT': '3306', 
     }
 }
 
