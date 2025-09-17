@@ -1,3 +1,64 @@
+# 🛒 Meta Analyzer App
+
+## Descripción
+Aplicación web para comparar precios de productos en diferentes supermercados de Santa Cruz de la Sierra.  
+El sistema permite buscar un producto (ejemplo: *arroz 5kg, leche*) y comparar los precios en varios supermercados, resaltando cuál es el más barato.  
+
+---
+
+## Tecnologías
+- **Django (Python)**: backend y manejo de base de datos.  
+- **JavaScript**: frontend y scrapers.  
+- **Chart.js**: visualización de datos en el dashboard.  
+- **PostgreSQL**: almacenamiento de precios y productos.  
+- **Cloudflared**: túnel HTTPS para acceso remoto seguro.  
+
+---
+
+## 📂 Project Structure
+```
+scrapper/
+├── manage.py               # Django CLI
+├── db.sqlite3              # Default SQLite database
+├── scrapper/               # Project settings & config
+│   ├── settings.py
+│   ├── urls.py
+│   ├── wsgi.py / asgi.py
+│
+└── scrapper_app/           # Core application
+    ├── models.py           # Database models
+    ├── views.py            # Application logic
+    ├── admin.py            # Django admin registration
+    ├── migrations/         # Schema history
+    └── templates/          # HTML templates
+```
+
+---
+
+## 🔗 Endpoints & Rutas
+Definidas en `scrapper/urls.py` and `scrapper_app/views.py`.
+
+Examples:
+- `/admin/` → Django admin  
+- `/buscar/` → Product search page  
+- `/producto-precios/` → JSON response with price analysis  
+- `/producto/<id>/` → Detail page for a product  
+
+---
+
+## Funcionalidades
+- Scraper para obtener datos de supermercados (Hipermaxi, Ketal, Fidalga, Amarket).  
+- Limpieza y normalización de datos (unidades, duplicados, valores faltantes).  
+- Buscador de productos por nombre.  
+- Identificación del supermercado con el precio más barato.  
+- Dashboard con gráficos:
+  - Precio promedio por supermercado.  
+  - Cantidad de productos por supermercado.  
+  - Distribución de precios (mínimo, promedio, máximo).  
+
+---
+
+
 # Scrapper Serve
 
 Un **job runner** ligero en Node.js que realiza scraping de datos (usando `axios`) y los almacena en PostgreSQL mediante `pg`, con programación de tareas gracias a `node-cron`.
