@@ -1,0 +1,45 @@
+{% extends "base.html" %} {% block title %} Home Page {% endblock %}
+{% block content %}
+  <div class="jumbotron mt-3">
+    <h1 class="display-4">Welcome to the Meta Analyzer App!</h1>
+    <p class="lead">This is a simple Django application for web scraping.</p>
+    <hr class="my-4" />
+    <p>Use the navigation bar to explore different supermarkets of the app to compare the prices.</p>
+    <!--<a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>-->
+  </div>
+
+  <h3 class="mt-4">Precio promedio por supermercado</h3>
+  <canvas id="chart-precios" height="120"></canvas>
+
+  <!-- Chart.js desde CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    // Llama a tu endpoint /api/precios/
+    fetch("{% url 'precios_api' %}")
+      .then(r => r.json())
+      .then(d => {
+        const ctx = document.getElementById('chart-precios');
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: d.labels,            // ["Amarket","Fidalga","Hipermaxi"]
+            datasets: [{
+              label: 'Precio promedio',
+              data: d.values,            // [..,..,..]
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { display: true },
+              title: { display: false }
+            },
+            scales: {
+              y: { beginAtZero: true }
+            }
+          }
+        });
+      })
+      .catch(err => console.error('Error cargando /api/precios/:', err));
+  </script>
+{% endblock %}

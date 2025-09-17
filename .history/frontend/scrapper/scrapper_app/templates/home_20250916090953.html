@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Home Page{% endblock %}
+
+{% block content %}
+  <div class="jumbotron mt-3">
+    <h1 class="display-4">Welcome to the Meta Analyzer App!</h1>
+    <p class="lead">This is a simple Django application for web scraping.</p>
+    <hr class="my-4" />
+    <p>Use the navigation bar to explore different supermarkets of the app to compare the prices.</p>
+  </div>
+
+  <h3 class="mt-4">Precio promedio por supermercado</h3>
+  <canvas id="chart-precios" height="120"></canvas>
+
+  <h3 class="mt-5">Cantidad de productos por supermercado</h3>
+  <canvas id="chart-cantidad" height="120"></canvas>
+
+  <h3 class="mt-5">Distribución de precios (mínimo, promedio, máximo)</h3>
+  <canvas id="chart-distribucion" height="140"></canvas>
+
+  <!-- Chart.js desde CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    // --- Gráfico 1: Precio promedio por supermercado ---
+    fetch("{% url 'precios_api' %}")
+      .then(r => r.json())
+      .then(d => {
+        const el = document.getElementById('chart-precios');
+        new Chart(el, {
+          type: 'bar',
+          data: {
+            labels: d.labels,
+            datasets: [{ label: 'Precio promedio', data: d.values }]
+          },
+          options: {
+            responsive: true,
+            scales: { y: { beginAtZero: true } }
+          }
+        });
+      })
+      .catch(err => console.error('Error /api/precios/:', err));
+
+    // --- Gráfico 2: Cantidad de productos por supermercado ---
+    fetch("{% url 'cantidad_productos_por_supermercado' %}")
+      .then(r => r.json())
+      .then(d => {
+        const el = document.getElementById('chart-cantidad');
+        new Chart(el, {
+          type: 'pie',
+          data: {
+            labels: d.labels,
+            datasets: [{ label: 'Cantidad de productos', data: d.values }]
+          },
+          options: { responsive: true }
+        });
+      })
+      .catch(err => console.error('Error /api/cantidad/:', err));
+
+    // --- Gráfico 3: Distribución (min, prom, max) por supermercado ---
+    fetch("{% url 'distribucion_precios' %}")
+      .then(r => r.json())
+      .then(arr => {
+        const labels = arr.map(x => x.supermercado);
+        const minVals = arr.map(x => x.min);
+        const promVals = arr.map(x => x.promedio);
+        const maxVals = arr.map(x => x.max);
+
+        const el = document.getElementById('chart-distribucion');
+        new Chart(el, {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [
+              { label: 'Mínimo', data: minVals },
+              { label: 'Promedio', data: promVals },
+              { label: 'Máximo', data: maxVals }
+            ]
+          },
+          options: {
+            responsive: true,
+            scales: { y: { beginAtZero: true } },
+            plugins: { tooltip: { mode: 'index', intersect: false } }
+          }
+        });
+      })
+      .catch(err => console.error('Error /api/distribucion/:', err));
+  </script>
+{% endblock %}

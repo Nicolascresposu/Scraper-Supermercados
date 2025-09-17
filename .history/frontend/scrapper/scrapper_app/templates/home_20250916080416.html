@@ -1,0 +1,43 @@
+<!--{% extends "base.html" %} {% block title %} Home Page {% endblock %}
+{% block content %}
+  <div class="jumbotron mt-3">
+    <h1 class="display-4">Welcome to the Scrapper App!</h1>
+    <p class="lead">This is a simple Django application for web scraping.</p>
+    <hr class="my-4" />
+    <p>Use the navigation bar to explore different supermarkets of the app to compare the prices.</p>
+    <a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>
+  </div>
+{% endblock %}-->
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Comparador de Supermercados</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h2>Precio promedio por supermercado</h2>
+  <canvas id="chart"></canvas>
+
+  <script>
+    fetch("{% url 'precios_api' %}")
+      .then(r => r.json())
+      .then(d => {
+        const ctx = document.getElementById('chart');
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: d.labels,
+            datasets: [{
+              label: 'Precio promedio',
+              data: d.values
+            }]
+          },
+          options: { responsive: true }
+        });
+      })
+      .catch(err => console.error('Error cargando datos:', err));
+  </script>
+</body>
+</html>

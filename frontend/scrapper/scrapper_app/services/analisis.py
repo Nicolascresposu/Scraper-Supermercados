@@ -1,0 +1,61 @@
+from django.db.models import Avg, Min, Max, Count
+from scrapper_app.models import Producto
+
+
+class AnalisisPrecios:
+    @staticmethod
+    def promedio_por_super():
+        query = (
+            Producto.objects
+            .values("supermercado")
+            .annotate(precio_promedio=Avg("precio"))
+        )
+        return {row["supermercado"]: float(row["precio_promedio"]) for row in query}
+
+    @staticmethod
+    def producto_mas_barato(nombre_producto):
+        qs = (
+        Producto.objects
+        .filter(nombre__icontains=nombre_producto)
+        .values("supermercado")
+        .annotate(precio=Min("precio"))   # puedes usar Avg o Max si prefieres
+        .order_by("supermercado")
+    )
+        return {
+            "labels": [r["supermercado"] for r in qs],
+            "values": [float(r["precio"]) for r in qs]
+        }
+        
+    @staticmethod
+    def cantidad_productos_por_supermercado():
+        query = (
+            Producto.objects
+            .values("supermercado")
+            .annotate(cantidad=Count("product_id"))
+        )
+        return {row["supermercado"]: row["cantidad"] for row in query}
+    
+    @staticmethod
+    def distribucion_precios_por_super():
+        query = (
+            Producto.objects
+            .values("supermercado")
+            .annotate(
+                precio_min=Min("precio"),
+                precio_max=Max("precio"),
+                precio_promedio=Avg("precio"),
+            )
+            .order_by("supermercado")
+        )
+        return [
+            {
+                "supermercado": row["supermercado"],
+                "min": float(row["precio_min"]),
+                "max": float(row["precio_max"]),
+                "promedio": float(row["precio_promedio"]),
+            }
+            for row in query
+        ]   
+    
+    
+            

@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% block title %}Home Page{% endblock %}
+
+{% block content %}
+  <div class="jumbotron mt-3">
+    <h1 class="display-4">Welcome to the Meta Analyzer App!</h1>
+    <hr class="my-4" />
+    <p>Use the navigation bar to explore different supermarkets of the app to compare the prices.</p>
+  </div>
+
+  <!-- 🔎 Buscador de producto -->
+  <form id="buscar-form" class="row g-2 align-items-center mb-4">
+    <div class="col-md-8">
+      <input id="buscar-input" type="text" class="form-control" placeholder="Buscar producto (ej. arroz 5kg, leche)..." />
+    </div>
+    <div class="col-md-4">
+      <button class="btn btn-primary w-100" type="submit">Comparar precios del producto</button>
+    </div>
+  </form>
+
+  <!-- Resultado del buscador -->
+  <div class="row" id="producto-row" style="display:none;">
+    <div class="col-md-6 mb-4">
+      <h5 class="text-center">
+        Mismo producto en distintos supermercados: <span id="producto-titulo"></span>
+      </h5>
+      <div class="text-center mb-2">
+        <span id="producto-cheapest" class="badge bg-success" style="display:none;"></span>
+      </div>
+      <div style="height:300px">
+        <canvas id="chart-producto"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 mb-4">
+      <h5 class="text-center">Precio promedio por supermercado</h5>
+      <div style="height:300px"><canvas id="chart-precios"></canvas></div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+      <h5 class="text-center">Cantidad de productos por supermercado</h5>
+      <div style="height:300px"><canvas id="chart-cantidad"></canvas></div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+      <h5 class="text-center">Distribución de precios (mín, prom, max)</h5>
+      <div style="height:300px"><canvas id="chart-distribucion"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Chart.js desde CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    // --- Gráficos existentes ---
+    fetch("{% url 'precios_api' %}")
+      .then(r => r.json())
+      .then(d => new Chart(document.getElementById('chart-precios'), {
+        type: 'bar',
+        data: { labels: d.labels, datasets: [{ label: 'Precio promedio', data: d.values }] },
+        options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+      }));
+
+    fetch("{% url 'cantidad_productos_por_supermercado' %}")
+      .then(r => r.json())
+      .then(d => new Chart(document.getElementById('chart-cantidad'), {
+        type: 'pie',
+        data: { labels: d.labels, datasets: [{ label: 'Cantidad de productos', data: d.values }] },
+        options: { responsive: true, maintainAspectRatio: false }
+      }));
+
+    fetch("{% url 'distribucion_precios' %}")
+      .then(r => r.json())
+      .then(arr => {
+        const labels = arr.map(x => x.supermercado);
+        const minVals = arr.map(x => x.min);
+        const promVals = arr.map(x => x.promedio);
+        const maxVals = arr.map(x => x.max);
+
+        new Chart(document.getElementById('chart-distribucion'), {
+          type: 'bar',
+          data: { labels, datasets: [
+            { label: 'Mínimo', data: minVals },
+            { label: 'Promedio', data: promVals },
+            { label: 'Máximo', data: maxVals }
+          ]},
+          options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+        });
+      });
+
+    let productoChart = null;
+    document.getElementById('buscar-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const q = document.getElementById('buscar-input').value.trim();
+      const row = document.getElementById('producto-row');
+      const title = document.getElementById('producto-titulo');
+      const badge = document.getElementById('producto-cheapest');
+
+      if (!q) { row.style.display = 'none'; return; }
+
+      const url = "{% url 'producto_precios' %}" + "?q=" + encodeURIComponent(q);
+      const res = await fetch(url);
+      const data = await res.json();
+
+      if (!data.labels || data.labels.length === 0) {
+        row.style.display = 'none';
+        alert('No se encontraron coincidencias para "' + q + '". Prueba con otro término.');
+        return;
+      }
+
+      row.style.display = 'block';
+      title.textContent = q;
+
+      if (data.cheapest) {
+        badge.style.display = 'inline-block';
+        badge.textContent = `Más barato: ${data.cheapest.super} — ${data.cheapest.precio}`;
+      } else {
+        badge.style.display = 'none';
+      }
+
+      const canvas = document.getElementById('chart-producto');
+      if (productoChart) productoChart.destroy();
+      productoChart = new Chart(canvas, {
+        type: 'bar',
+        data: { labels: data.labels, datasets: [{ label: 'Precio', data: data.values }] },
+        options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+      });
+    });
+  </script>
+{% endblock %}

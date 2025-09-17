@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Home Page{% endblock %}
+
+{% block content %}
+  <div class="jumbotron mt-3">
+    <h1 class="display-4">Welcome to the Meta Analyzer App!</h1>
+    <hr class="my-4" />
+    <p>Use the navigation bar to explore different supermarkets of the app to compare the prices.</p>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 mb-4">
+      <h5 class="text-center">Precio promedio por supermercado</h5>
+      <canvas id="chart-precios" class="chart-fixed"></canvas>
+    </div>
+
+    <div class="col-md-6 mb-4">
+      <h5 class="text-center">Cantidad de productos por supermercado</h5>
+      <canvas id="chart-cantidad" height="200"></canvas>
+    </div>
+
+    <div class="col-md-6 mb-4">
+      <h5 class="text-center">Distribución de precios (mín, prom, max)</h5>
+      <canvas id="chart-distribucion" height="200"></canvas>
+    </div>
+  </div>
+
+  <!-- Chart.js desde CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    // --- Gráfico 1: Precio promedio por supermercado ---
+    fetch("{% url 'precios_api' %}")
+      .then(r => r.json())
+      .then(d => {
+        new Chart(document.getElementById('chart-precios'), {
+          type: 'bar',
+          data: { labels: d.labels, datasets: [{ label: 'Precio promedio', data: d.values }] },
+          options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+        });
+      });
+
+    // --- Gráfico 2: Cantidad de productos por supermercado ---
+    fetch("{% url 'cantidad_productos_por_supermercado' %}")
+      .then(r => r.json())
+      .then(d => {
+        new Chart(document.getElementById('chart-cantidad'), {
+          type: 'pie',
+          data: { labels: d.labels, datasets: [{ label: 'Cantidad de productos', data: d.values }] },
+          options: { responsive: true, maintainAspectRatio: false }
+        });
+      });
+
+    // --- Gráfico 3: Distribución (min, prom, max) por supermercado ---
+    fetch("{% url 'distribucion_precios' %}")
+      .then(r => r.json())
+      .then(arr => {
+        const labels = arr.map(x => x.supermercado);
+        const minVals = arr.map(x => x.min);
+        const promVals = arr.map(x => x.promedio);
+        const maxVals = arr.map(x => x.max);
+
+        new Chart(document.getElementById('chart-distribucion'), {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [
+              { label: 'Mínimo', data: minVals },
+              { label: 'Promedio', data: promVals },
+              { label: 'Máximo', data: maxVals }
+            ]
+          },
+          options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+        });
+      });
+  </script>
+{% endblock %}
