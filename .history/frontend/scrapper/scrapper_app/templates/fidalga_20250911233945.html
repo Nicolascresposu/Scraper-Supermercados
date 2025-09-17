@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Fidalga{% endblock %}
+
+{% block content %}
+<h2 class="mt-4">Productos de Fidalga</h2>
+<div class="row">
+  {% for producto in productos %}
+    <div class="col-4 my-2">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="image-container">
+            <img src="{{producto.image_link}}" class="img-fluid rounded" alt="  " loading="lazy">
+          </div>
+          <h5 class="card-title mt-2">{{producto.nombre}}</h5>
+          <p><span class="badge bg-secondary">{{producto.precio}} Bs.</span></p>
+        </div>
+      </div>    
+    </div>
+  {% empty %}
+    <tr>
+      <td colspan="2">No hay productos disponibles</td>
+    </tr>
+  {% endfor %}
+</div>
+
+<!--<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Precio</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for producto in productos %}
+    <tr>
+      <td>{{ producto.nombre }}</td>
+      <td>{{ producto.precio }}</td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="2">No hay productos disponibles</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>-->
+{% endblock %}

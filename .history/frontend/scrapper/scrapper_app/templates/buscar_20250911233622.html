@@ -10,13 +10,11 @@
     <div class="col-4 my-2">
         <div class="card h-100">
             <div class="card-header">
-                <h5 class="card-title my-2"> 
-                  <h5 class="card-title my-2"> <p class="{{ producto.color_css }}">{{ producto.supermercado }}</p> </h5>
-                </h5>
+                <h5 class="card-title my-2"> <p class="{{ producto.color_css }}">{{ producto.supermercado }}</p> </h5>
             </div>
 
             <div class="card-body mt-2">
-                <img src="{{producto.image_link}}" class="img-fluid rounded" alt="  " loading="lazy">
+                <img src="{{producto.image_link}}" class="img-fluid rounded" alt="  " loading="lazy">>
                 <h5 class="card-title">{{producto.nombre}}</h5>
                 <p><span class="badge bg-secondary">{{producto.precio}} Bs.</span></p>
             </div>
