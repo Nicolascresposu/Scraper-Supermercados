@@ -19,11 +19,10 @@ Un **job runner** ligero en Node.js que realiza scraping de datos (usando `axios
 
 ```
 .
+├─ frontend/scrapper   # Frontend visible (Documentado en otro segmento)
 ├─ scrapper-serve.js   # Script principal: pool de DB, cron y mainFunction()
 └─ README.md           # Este archivo
 ```
-
-> Actualmente el archivo tiene algunos valores configurados de forma fija (credenciales de DB, expresión cron, zona horaria y la cadena `selection`). Se recomienda moverlos a variables de entorno como se muestra abajo.
 
 ---
 
@@ -49,18 +48,6 @@ npm install axios pg node-cron
 
 ## Configuración
 
-### Variables de entorno (recomendado)
-
-Crea un archivo `.env` en la raíz del proyecto (y cárgalo con `dotenv` si lo agregas):
-
-```dotenv
-# Base de datos
-PGHOST=localhost
-PGUSER=postgres
-PGPASSWORD=change-me
-PGDATABASE=bd_extraction
-PGPORT=5432
-
 # Programador
 CRON_SCHEDULE=0 2 * * *         # todos los días a las 02:00
 CRON_TIMEZONE=America/La_Paz     # zona horaria (IANA)
@@ -68,17 +55,6 @@ CRON_TIMEZONE=America/La_Paz     # zona horaria (IANA)
 # Selección de scraper
 SCRAPER_SELECTION=hipermaxi
 ```
-
-Si no usas `.env`, exporta estas variables en tu shell o en un servicio (systemd, Docker, etc.).
-
-> **Nota:** En el código adjunto, los valores están fijos:
->
-> - DB: `host: 'localhost', user: 'postgres', password: '1234567890', database: 'bd_extraction'`
-> - Cron: `0 2 * * *`
-> - Zona horaria: `"America/New_York"`
-> - Selection: `'hipermaxi'`
->
-> Se recomienda reemplazarlos con `process.env.*`.
 
 ---
 
@@ -92,7 +68,7 @@ CREATE USER scrapper_user WITH PASSWORD 'change-me';
 GRANT ALL PRIVILEGES ON DATABASE bd_extraction TO scrapper_user;
 ```
 
-> El script no incluye el DDL de las tablas. Crea tablas según la información que quieras almacenar (ej. productos, scrapes, timestamps, etc.).
+> El script no incluye el DDL de las tablas.
 
 ---
 
@@ -110,15 +86,13 @@ El script hará lo siguiente:
 3. Iniciar un cron job que ejecuta `mainFunction()` en la hora configurada.  
 4. Mostrar en logs: `Scheduler started. Waiting for the scheduled time...`
 
-> Si quieres que **solo se ejecute por cron** (sin ejecución inmediata), comenta o elimina la llamada a `mainFunction()` al final del archivo.
+> Si quieres que **solo se ejecute por cron** (sin ejecución inmediata), se puede comentar o eliminar la llamada a `mainFunction()` al final del archivo.
 
 ### Cambiar horario o zona horaria
 
 - Modifica la expresión cron y zona horaria (en el código o variables de entorno).
-- Ejemplos:
-  - Todos los días a la 01:30: `CRON_SCHEDULE=30 1 * * *`
-  - Cada 6 horas: `CRON_SCHEDULE=0 */6 * * *`
-  - Zona horaria: `CRON_TIMEZONE=America/La_Paz`
+- Ejemplo:
+  - Cada 6 horas: `cron.schedule('0 */6 * * *', () => {=`
 
 ---
 
@@ -202,14 +176,6 @@ docker run --rm   -e PGHOST=host.docker.internal   -e PGUSER=scrapper_user   -e 
 - **Reintentos y backoff**: envolver `axios` con lógica de reintentos.  
 - **Validación de datos**: limpiar y validar antes de insertar en la base.  
 - **Migraciones**: usar herramientas como `knex` o `node-pg-migrate`.
-
----
-
-## Notas de seguridad
-
-- No guardar contraseñas en el código fuente.  
-- Asigna privilegios mínimos al usuario de la DB.  
-- Valida todo dato externo antes de procesarlo.  
 
 ---
 

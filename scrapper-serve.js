@@ -11,8 +11,9 @@ const dbConfig = {host: 'localhost', user: 'postgres', password: '1234567890', d
 const pool = new Pool(dbConfig);
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-//Un switch para una variable que todavia no existe.
+// La funcion principal, llamada por el cronjob
 async function mainFunction() {
+    // La variable que determina 
     let selection = 'hipermaxi'
     switch (selection) {
         case 'hipermaxi':
