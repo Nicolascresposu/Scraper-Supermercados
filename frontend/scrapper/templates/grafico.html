@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Precios</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: sans-serif; display: grid; place-items: center; min-height: 90vh; }
+        /* AC 3: CSS responsivo para legibilidad */
+        #chart-container {
+            position: relative;
+            width: 90vw;
+            max-width: 800px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="chart-container">
+        <h1>Precio Promedio por Supermercado</h1>
+        <canvas id="myChart"></canvas>
+    </div>
+
+    <script>
+        (async function() {
+            // Llama a la API de Django para obtener los datos
+            const response = await fetch('/api/datos-grafico/');
+            const apiData = await response.json();
+
+            const ctx = document.getElementById('myChart');
+
+            new Chart(ctx, {
+                type: 'bar', 
+                data: {
+                    labels: apiData.labels, 
+                    datasets: [{
+                        // AC 2: Leyenda visible y entendible (etiqueta de la serie)
+                        // AC 4: Ortografía y consistencia (uso de "Bs.")
+                        label: 'Precio Promedio (Bs.)', 
+                        data: apiData.data,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.5)', 
+                            'rgba(54, 162, 235, 0.5)',
+                            'rgba(255, 206, 86, 0.5)',
+                        ]
+                    }]
+                },
+                options: {
+                    // AC 3: Legibilidad en pantallas (responsivo)
+                    responsive: true,
+                    maintainAspectRatio: true, 
+                    
+                    plugins: {
+                        // AC 2: Leyenda visible
+                        legend: {
+                            display: true,
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        // AC 1: Eje Y con etiqueta y unidades 
+                        y: {
+                            title: {
+                                display: true,
+                                // AC 4: Revisión de ortografía ("Precio (Bs.)")
+                                text: 'Precio Promedio (Bs.)' 
+                            }
+                        },
+                        // AC 1: Eje X con etiqueta
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Supermercado' // AC 4: Revisión de ortografía
+                            }
+                        }
+                    }
+                }
+            });
+        })();
+    </script>
+
+</body>
+</html>

@@ -16,9 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from . import views  
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("", include("scrapper_app.urls")),
+    path('graficos/', views.pagina_grafico, name='pagina-grafico'),
     
+    path('api/datos-grafico/', views.datos_del_grafico, name='datos-grafico'),
 ]
