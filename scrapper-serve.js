@@ -1,3 +1,4 @@
+
 // Importamos librerias, estas 2 son las minimas
 const axios = require('axios');
 //const mysql = require('mysql2/promise');
@@ -15,8 +16,9 @@ const pool = new Pool(dbConfig);
 const poolTimeBased = new Pool(dbTimeBasedConfig);
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-//Un switch para una variable que todavia no existe.
+// La funcion principal, llamada por el cronjob
 async function mainFunction() {
+    // La variable que determina 
     let selection = 'hipermaxi'
     switch (selection) {
         case 'hipermaxi':
@@ -64,9 +66,10 @@ while (!endOfInventory) {
         counter += 1;
     }
 }
+// Scraper para Fidalga, que utiliza el API de shopify expuesto
 async function runScraperFidalga() {
 const URL = "https://www.fidalga.com/collections/all/products.json?page=" // Page size is 30.
-let endOfInventory = false;
+let endOfInventory = false; //Variable we use 
 let counter = 1; // La pagina 0 es igual a la pagina 1, asi que comenzamos en 1.
 while (!endOfInventory) {
         const resp = await axios.get(URL + counter);
@@ -88,11 +91,11 @@ while (!endOfInventory) {
         counter += 1;
     }
 }
-
+// Scraper para Amarket, que utiliza el API de shopify expuesto
 async function runScraperAmarket() {
     const URL = "https://amarket.com.bo/collections/all/products.json?page="
-    let endOfInventory = false;
-    let counter = 1; 
+    let endOfInventory = false; //Variable we use 
+    let counter = 1; // La pagina 0 es igual a la pagina 1, asi que comenzamos en 1.
 
     while (!endOfInventory) {
         const resp = await axios.get(URL + counter);
@@ -222,7 +225,7 @@ cron.schedule('0 2 * * *', () => {
   mainFunction();
 }, {
   scheduled: true,
-  timezone: "America/New_York" // Example timezone, change to your own!
+  timezone: "America/New_York" // Example timezone, but works for us.
 });
 mainFunction();
 console.log('Scheduler started. Waiting for the scheduled time...');
