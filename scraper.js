@@ -148,8 +148,8 @@ async function runScraperAmarket(save = true) {
 async function runScraper(store = "all", save = true) {
   switch (store.toLowerCase()) {
     case "hipermaxi": return runScraperHipermaxi(save);
-    case "fidalga": return runScraperFidalga(save);
-    case "amarket": return runScraperAmarket(save);
+    case "fidalga":   return runScraperFidalga(save);
+    case "amarket":   return runScraperAmarket(save);
     case "all":
       const h = await runScraperHipermaxi(save);
       const f = await runScraperFidalga(save);
