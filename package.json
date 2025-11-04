@@ -1,7 +1,18 @@
 {
+  "name": "scraper-supermercados",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Scraper de supermercados + API Express",
+  "main": "scraper.js",
+  "scripts": {
+    "api": "node api/server.js"
+  },
   "dependencies": {
     "axios": "^1.11.0",
-    "mysql2": "^3.14.3",
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "express": "^4.21.1",
+    "express-rate-limit": "^7.4.0",
     "node-cron": "^4.2.1",
     "pg": "^8.16.3"
   }
