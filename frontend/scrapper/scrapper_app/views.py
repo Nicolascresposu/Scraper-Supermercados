@@ -8,6 +8,9 @@ from unidecode import unidecode
 from django.http import JsonResponse
 from django.shortcuts import render
 from .services.analisis import AnalisisPrecios
+from rest_framework import generics, filters
+from django_filters.rest_framework import DjangoFilterBackend
+from .serializers import ProductoSerializer
 from django.views.decorators.csrf import csrf_exempt
 import json, requests
 
@@ -97,7 +100,8 @@ def distribucion_precios(request):
     return JsonResponse(data, safe=False)    
 
 def producto_precios(request):
-    q = (request.GET.get('q') or '').strip()
+    q = (request.GET.get('nombre') or '').strip()
+    
     if not q:
         return JsonResponse({"labels": [], "values": [], "cheapest": None})
     try:
@@ -107,6 +111,10 @@ def producto_precios(request):
         import traceback
         traceback.print_exc()
         return JsonResponse({"error": str(e)}, status=500)
-
-
     
+class ProductoSearchView(generics.ListAPIView):
+    queryset = Producto.objects.all().order_by('nombre', 'precio')
+    serializer_class = ProductoSerializer
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    filterset_fields = ['supermercado'] # Para ?supermercado=amarket
+    search_fields = ['nombre', 'product_id'] # Para ?search=leche  

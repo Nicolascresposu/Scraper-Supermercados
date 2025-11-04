@@ -9,7 +9,11 @@ const cron = require('node-cron');
 
 //Declaramos la funcion sleep que vamos a usar a lo largo del programa, y configuramos nuestra base de datos
 const dbConfig = {host: 'localhost', user: 'postgres', password: '1234567890', database: 'bd_extraction'};
+
+const dbTimeBasedConfig = {host: 'localhost', user: 'postgres', password: '1234567890', database: 'extraction_timebased'};  
+
 const pool = new Pool(dbConfig);
+const poolTimeBased = new Pool(dbTimeBasedConfig);
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 // La funcion principal, llamada por el cronjob
@@ -127,6 +131,21 @@ async function saveProduct(product, supermarket) {
         image_link = EXCLUDED.image_link;
   `;
 
+  const sqlTimeBased = `
+    INSERT INTO preciohistorico (product_id, precio, tiempo_registro)
+    VALUES ($1, $2, NOW());
+    `;
+    
+  const boolean = false;  
+
+  const sqlProductData = `
+    INSERT INTO product_data (product_id, nombre, supermercado)
+    VALUES ($1, $2, $3)
+    ON CONFLICT (product_id) DO UPDATE
+    SET nombre = EXCLUDED.nombre,
+        supermercado = EXCLUDED.supermercado;
+  `;
+
   let values = [];
 
   // excluded se utiliza para referirse a los valores que se intentaron insertar
@@ -147,6 +166,36 @@ async function saveProduct(product, supermarket) {
         product.images?.[0]?.src || null
     ];
   }
+
+  let valuesTime = [];
+
+  if(supermarket == "Hipermaxi") { 
+    valuesTime = [
+      product.IdProducto || null,
+      product.PrecioVenta || 0,
+    ];
+  } else {
+    valuesTime = [
+        product.id,
+        product.variants?.[0]?.price || 0,
+    ];
+  }
+
+  let valuesData = [];
+
+  if(supermarket == "Hipermaxi") { 
+    valuesData = [
+      product.IdProducto || null,
+      product.Descripcion || "Sin nombre",
+      supermarket,
+    ];
+  } else {
+    valuesData = [
+        product.id,
+        product.title,
+        supermarket,
+    ];
+  }
   
 
   try {
@@ -154,7 +203,20 @@ async function saveProduct(product, supermarket) {
   } catch (err) {
     console.error("Error saving product:", err);
   }
-}
+
+  //verifica si ese producto no está ya en product_data
+  const checking = await poolTimeBased.query('SELECT product_id FROM product_data WHERE product_id = $1', [product.IdProducto || product.id]); 
+
+  if (checking.rowCount === 0) {
+    await poolTimeBased.query(sqlProductData, valuesData);    
+  }
+
+  try {
+    await poolTimeBased.query(sqlTimeBased, valuesTime);
+  } catch (err) {
+    console.error("Error saving time-based product:", err);
+  }
+}   
 
 
 (async () => {
