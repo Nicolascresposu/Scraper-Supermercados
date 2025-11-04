@@ -8,7 +8,36 @@ from unidecode import unidecode
 from django.http import JsonResponse
 from django.shortcuts import render
 from .services.analisis import AnalisisPrecios
+from django.views.decorators.csrf import csrf_exempt
+import json, requests
 
+N8N_URL = "http://localhost:5678/webhook/ask-scraippy"  # o tu IP interna
+
+@csrf_exempt
+def ask_list(request):
+    if request.method != 'POST':
+        return JsonResponse({"error": "Method not allowed"}, status=405)
+    try:
+        raw = request.body  # text/plain
+        r = requests.post(
+            N8N_URL,
+            data=raw,
+            headers={"Content-Type": "text/plain"},
+            timeout=300
+        )
+        # Devolver lo que n8n responda tal cual
+        content_type = r.headers.get("Content-Type", "application/json")
+        if content_type.startswith("application/json"):
+            return HttpResponse(r.content, status=r.status_code, content_type=content_type)
+        # fallback: intentar parsear a JSON
+        try:
+            return JsonResponse(r.json(), status=r.status_code, safe=False)
+        except Exception:
+            return HttpResponse(r.text, status=r.status_code, content_type="text/plain")
+    except requests.Timeout:
+        return JsonResponse({"error": "n8n timeout"}, status=504)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
 
 # Create your views here.
 def home(request):

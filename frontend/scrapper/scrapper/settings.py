@@ -79,13 +79,9 @@ WSGI_APPLICATION = 'scrapper.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': { # datos de la base de datos PostgreSQL
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'bd_extraction',
-        'USER': 'postgres',     
-        'PASSWORD': '1234567890', 
-        'HOST': 'localhost',
-        'PORT': '5432', 
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 

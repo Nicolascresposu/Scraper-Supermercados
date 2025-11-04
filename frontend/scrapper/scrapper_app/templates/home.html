@@ -1,3 +1,6 @@
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
+
 {% extends "base.html" %}
 {% block title %}Home Page{% endblock %}
 
@@ -17,6 +20,62 @@
       <button class="btn btn-primary w-100" type="submit">Comparar precios del producto</button>
     </div>
   </form>
+
+  <!-- Add this block somewhere under your existing content -->
+<div class="card my-4">
+  <div class="card-body">
+    <h5 class="card-title">Preguntale a Scraipy ✨</h5>
+    <p class="text-muted mb-2">Pega tu lista de compras (una por línea) y Scraipy, nuestra IA, responderá.</p>
+    <form id="ask-form">
+      <textarea id="ask-text" class="form-control" rows="5" placeholder="Leche&#10;Pan&#10;Huevos&#10;Tomates"></textarea>
+      <button id="ask-btn" class="btn btn-primary mt-3" type="submit">Preguntar</button>
+    </form>
+    <div id="ask-result" class="mt-3" style="display:none;">
+      <h6><b>Scraipy:</b></h6>
+      <div id="ask-output" class="md-box"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const askForm = document.getElementById('ask-form');
+  const askText = document.getElementById('ask-text');
+  const askBtn = document.getElementById('ask-btn');
+  const askResult = document.getElementById('ask-result');
+  const askOutput = document.getElementById('ask-output');
+
+  askForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const body = askText.value.trim();
+    if (!body) return;
+
+    askBtn.disabled = true; askBtn.textContent = 'Consultando…';
+    askResult.style.display = 'none'; askOutput.textContent = '';
+
+    try {
+      const res = await fetch("{% url 'ask_list' %}", {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body
+      });
+      const data = await res.json();
+      // Prefer {answer}, but fall back to Gemini raw shape if needed
+      const text =
+        data.answer ??
+        data?.content?.parts?.map(p => p.text || '').join('\n') ??
+        JSON.stringify(data, null, 2);
+
+        const html = marked.parse(text || '(Sin contenido)');
+        askOutput.innerHTML = DOMPurify.sanitize(html);      askResult.style.display = 'block';
+    } catch (err) {
+      askOutput.textContent = 'Error llamando al bot: ' + (err?.message || err);
+      askResult.style.display = 'block';
+    } finally {
+      askBtn.disabled = false; askBtn.textContent = 'Preguntar';
+    }
+  });
+</script>
+
 
   <!-- Resultado del buscador -->
   <div class="row" id="producto-row" style="display:none;">
