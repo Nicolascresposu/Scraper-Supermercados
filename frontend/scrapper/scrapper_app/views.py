@@ -14,7 +14,7 @@ from .serializers import ProductoSerializer
 from django.views.decorators.csrf import csrf_exempt
 import json, requests
 
-N8N_URL = "http://localhost:5678/webhook/ask-scraippy"  # o tu IP interna
+N8N_URL = "https://4ut81zox0dhucx8svhj1eyoi.hooks.n8n.cloud/webhook/ask-scraippy"  # o tu IP interna
 
 @csrf_exempt
 def ask_list(request):
